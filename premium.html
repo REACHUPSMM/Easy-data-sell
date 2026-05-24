@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Premium</title>
+<link rel="stylesheet" href="style.css">
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+/* FIREBASE */
+const firebaseConfig = {
+  apiKey: "AIzaSyCA-CqdOOvUwcCx-LFfgsD44cQRCeI-G1U",
+  authDomain: "data-seller-c30db.firebaseapp.com",
+  projectId: "data-seller-c30db",
+  storageBucket: "data-seller-c30db.firebasestorage.app",
+  messagingSenderId: "33011133656",
+  appId: "1:33011133656:web:cc11efa04fb5ea21ec3bad"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* USER */
+const phone = localStorage.getItem("phone");
+
+if (!phone) {
+  window.location.href = "login.html";
+}
+
+const userRef = doc(db, "users", phone);
+
+/* ACTIVATE PREMIUM */
+window.activatePremium = async function () {
+
+  const password = document.getElementById("premiumPass").value.trim();
+
+  if (password !== "2026PREMIUM2026") {
+    alert("Wrong premium password");
+    return;
+  }
+
+  const snap = await getDoc(userRef);
+
+  if (!snap.exists()) {
+    alert("User not found");
+    return;
+  }
+
+  await updateDoc(userRef, {
+    role: "premium"
+  });
+
+  localStorage.setItem("role", "premium");
+
+  alert("Premium Activated 🚀");
+
+  window.location.href = "dashboard.html";
+};
+
+</script>
+
+</head>
+
+<body>
+
+<div class="top-bar">
+
+  <div class="back-btn" onclick="history.back()">← Back</div>
+  <a href="menu.html" class="menu-btn">☰ Menu</a>
+
+</div>
+
+<div class="center-box">
+
+  <div class="logo-circle">👑</div>
+
+  <h1>Premium Access</h1>
+
+  <p>Unlock unlimited earning with premium benefits.</p>
+
+  <div class="feature-grid">
+
+    <div>⚡ No Cooldown</div>
+    <div>💰 2X Coins</div>
+    <div>🔥 Faster Rewards</div>
+    <div>🚀 Unlimited Time</div>
+
+  </div>
+
+  <input type="password" id="premiumPass" placeholder="Enter Premium Password">
+
+  <button class="premium-btn" onclick="activatePremium()">
+    ACTIVATE PREMIUM
+  </button>
+
+</div>
+
+</body>
+</html>

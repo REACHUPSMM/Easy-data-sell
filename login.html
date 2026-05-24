@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyCA-CqdOOvUwcCx-LFsgsD44cQRCeI-G1U",
+  authDomain: "data-seller-c30db.firebaseapp.com",
+  projectId: "data-seller-c30db"
+});
+
+const db = getFirestore(app);
+
+window.loginUser = async function () {
+
+  const phone = document.getElementById("phone").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (!phone) return alert("Enter phone number");
+
+  let role = "normal";
+
+  if (password === "2026dataprm") role = "premium";
+  else if (password !== "2026dataearn") return alert("Wrong password");
+
+  const ref = doc(db, "users", phone);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      phone,
+      coins: 0,
+      role
+    });
+  }
+
+  localStorage.setItem("phone", phone);
+  localStorage.setItem("role", role);
+  localStorage.setItem("logged", "yes");
+
+  window.location.href = "dashboard.html";
+};
+</script>
+
+</head>
+
+<body>
+
+<!-- TOP BAR (same style as other pages) -->
+<div class="top-bar">
+  <div class="back-btn" onclick="history.back()">← Back</div>
+  <a href="menu.html" class="menu-btn">☰ Menu</a>
+</div>
+
+<!-- LOGIN UI BOX -->
+<div class="center-box">
+
+  <div class="logo-circle">🔐</div>
+
+  <h1>Login</h1>
+  <p>Access your earning dashboard</p>
+
+  <input id="phone" type="text" placeholder="Mobile Number">
+  <input id="password" type="password" placeholder="Password">
+
+  <button class="main-btn" onclick="loginUser()">
+    LOGIN
+  </button>
+
+</div>
+
+</body>
+</html>

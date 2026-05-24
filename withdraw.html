@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Withdraw</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, doc, getDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyCA-CqdOOvUwcCx-LFsgsD44cQRCeI-G1U",
+  authDomain: "data-seller-c30db.firebaseapp.com",
+  projectId: "data-seller-c30db"
+});
+
+const db = getFirestore(app);
+
+/* PROTECT */
+const phone = localStorage.getItem("phone");
+if(!phone || localStorage.getItem("logged") !== "yes"){
+  window.location.href = "login.html";
+}
+
+let coins = 0;
+
+/* LOAD USER */
+async function load(){
+  const snap = await getDoc(doc(db,"users",phone));
+  coins = snap.data().coins || 0;
+
+  document.getElementById("coinShow").innerText = coins;
+}
+load();
+
+/* SWITCH METHOD */
+window.showMethod = function(){
+
+  const type = document.getElementById("type").value;
+
+  document.getElementById("upiBox").style.display = "none";
+  document.getElementById("bankBox").style.display = "none";
+
+  if(type === "upi"){
+    document.getElementById("upiBox").style.display = "block";
+  }
+
+  if(type === "bank"){
+    document.getElementById("bankBox").style.display = "block";
+  }
+};
+
+/* WITHDRAW */
+window.withdraw = async function(){
+
+  const type = document.getElementById("type").value;
+
+  const amount = document.getElementById("amount").value;
+
+  const rupees = (coins / 1000) * 10;
+
+  if(rupees < 250){
+    alert("Minimum withdrawal ₹250");
+    return;
+  }
+
+  let data = {
+    phone,
+    coins,
+    rupees,
+    status:"pending",
+    type
+  };
+
+  if(type === "upi"){
+    data.upi = document.getElementById("upi").value;
+  }
+
+  if(type === "bank"){
+    data.accountNumber = document.getElementById("acc").value;
+    data.bankName = document.getElementById("bank").value;
+    data.ifsc = document.getElementById("ifsc").value;
+    data.holder = document.getElementById("holder").value;
+  }
+
+  await addDoc(collection(db,"withdrawals"), data);
+
+  alert("Withdrawal request sent 🚀");
+};
+
+</script>
+
+</head>
+
+<body>
+
+<div class="top-bar">
+  <div class="back-btn" onclick="history.back()">← Back</div>
+  <a href="menu.html" class="menu-btn">☰ Menu</a>
+</div>
+
+<div class="center-box">
+
+  <div class="logo-circle">💸</div>
+
+  <h1>Withdraw</h1>
+
+  <p>1000 Coins = ₹10</p>
+  <p>Minimum ₹250</p>
+
+  <h3>Coins: <span id="coinShow">0</span></h3>
+
+  <!-- TYPE SELECT -->
+  <select id="type" onchange="showMethod()">
+    <option value="">Select Method</option>
+    <option value="upi">UPI</option>
+    <option value="bank">Bank Transfer</option>
+  </select>
+
+  <!-- UPI -->
+  <div id="upiBox" style="display:none;">
+    <input id="upi" placeholder="Enter UPI ID">
+  </div>
+
+  <!-- BANK -->
+  <div id="bankBox" style="display:none;">
+    <input id="acc" placeholder="Account Number">
+    <input id="bank" placeholder="Bank Name">
+    <input id="ifsc" placeholder="IFSC Code">
+    <input id="holder" placeholder="Account Holder Name">
+  </div>
+
+  <br>
+
+  <button class="main-btn" onclick="withdraw()">
+    REQUEST WITHDRAW
+  </button>
+
+</div>
+
+</body>
+</html>

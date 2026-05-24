@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Withdrawal History</title>
+<link rel="stylesheet" href="style.css">
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+/* FIREBASE */
+const firebaseConfig = {
+  apiKey: "AIzaSyCA-CqdOOvUwcCx-LFfgsD44cQRCeI-G1U",
+  authDomain: "data-seller-c30db.firebaseapp.com",
+  projectId: "data-seller-c30db",
+  storageBucket: "data-seller-c30db.firebasestorage.app",
+  messagingSenderId: "33011133656",
+  appId: "1:33011133656:web:cc11efa04fb5ea21ec3bad"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* USER */
+const phone = localStorage.getItem("phone");
+
+if (!phone) {
+  window.location.href = "login.html";
+}
+
+/* LOAD HISTORY */
+async function loadHistory() {
+
+  const q = query(
+    collection(db, "withdrawals"),
+    where("phone", "==", phone)
+  );
+
+  const snap = await getDocs(q);
+
+  const container = document.getElementById("historyList");
+  container.innerHTML = "";
+
+  snap.forEach(doc => {
+
+    const data = doc.data();
+
+    const div = document.createElement("div");
+    div.className = "history-item";
+
+    div.innerText =
+      `₹${data.amount} • ${data.method.toUpperCase()} • ${data.status}`;
+
+    container.appendChild(div);
+  });
+}
+
+loadHistory();
+
+</script>
+
+</head>
+
+<body>
+
+<div class="top-bar">
+
+  <div class="back-btn" onclick="history.back()">← Back</div>
+  <a href="menu.html" class="menu-btn">☰ Menu</a>
+
+</div>
+
+<div class="center-box">
+
+  <div class="logo-circle">📜</div>
+
+  <h1>Withdrawal History</h1>
+
+  <div id="historyList">
+    <div class="history-item">Loading...</div>
+  </div>
+
+</div>
+
+</body>
+</html>

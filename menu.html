@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script>
+if(localStorage.getItem("logged") !== "yes"){
+location.href="login.html";
+}
+</script>
+
+</head>
+
+<body>
+
+<div class="center-box">
+
+<div class="logo-circle">☰</div>
+
+<h2>MENU</h2>
+
+<div class="menu-box">
+
+<a href="dashboard.html">🏠 Dashboard</a>
+<a href="withdraw.html">💸 Withdraw</a>
+<a href="top.html">🏆 Top Earners</a>
+<a href="history.html">📜 History</a>
+<a href="premium.html">👑 Premium</a>
+<a href="support.html">💬 Support</a>
+
+<!-- ❌ REMOVED SIGNUP -->
+<!-- <a href="signup.html">Signup</a> -->
+
+<a href="index.html" onclick="localStorage.clear()">🚪 Logout</a>
+
+</div>
+
+</div>
+
+</body>
+</html>

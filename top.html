@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top Earners</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="top-bar">
+<div class="back-btn" onclick="history.back()">← Back</div>
+<a class="menu-btn" href="menu.html">☰ Menu</a>
+</div>
+
+<div class="center-box">
+
+<div class="logo-circle">🏆</div>
+
+<h2>Live Top Earners</h2>
+
+<div id="list" class="menu-box"></div>
+
+</div>
+
+<script>
+/* RANDOM NAME GENERATOR */
+function randomName(){
+const names = ["Arun","Karthik","Vijay","Rahul","Ajay","Surya","Dinesh","Kiran","Praveen","Vikram"];
+return names[Math.floor(Math.random()*names.length)];
+}
+
+/* RANDOM AMOUNT */
+function randomAmount(){
+return Math.floor(Math.random()*50000 + 1000);
+}
+
+/* MASK NUMBER */
+function maskNumber(){
+let num = Math.floor(Math.random()*9000000000 + 1000000000).toString();
+return num.slice(0,7) + "XXX";
+}
+
+/* CREATE LIST */
+function generate(){
+
+let html = "";
+
+for(let i=0;i<6;i++){
+
+html += `
+<div class="ref-code">
+🔥 ${randomName()} (${maskNumber()}) <br>
+💰 ₹${randomAmount()}
+</div>
+`;
+}
+
+document.getElementById("list").innerHTML = html;
+}
+
+/* FIRST LOAD */
+generate();
+
+/* EVERY 30 SEC UPDATE */
+setInterval(()=>{
+generate();
+},30000);
+
+</script>
+
+</body>
+</html>

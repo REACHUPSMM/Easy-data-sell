@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Signup</title>
+<link rel="stylesheet" href="style.css">
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const app = initializeApp({
+apiKey:"YOUR_KEY",
+authDomain:"YOUR_DOMAIN",
+projectId:"YOUR_PROJECT"
+});
+
+const db = getFirestore(app);
+
+window.signupUser = async function(){
+
+const phone = document.getElementById("phone").value;
+const refcode = document.getElementById("ref").value;
+
+const userRef = doc(db,"users",phone);
+const snap = await getDoc(userRef);
+
+if(snap.exists()) return alert("Already exists");
+
+await setDoc(userRef,{
+phone,
+coins:0,
+role:"normal",
+referralBy:refcode || null,
+referralCount:0
+});
+
+/* referral bonus */
+if(refcode){
+const r = doc(db,"users",refcode);
+const rs = await getDoc(r);
+
+if(rs.exists()){
+await updateDoc(r,{
+coins:(rs.data().coins||0)+600,
+referralCount:(rs.data().referralCount||0)+1
+});
+}
+}
+
+localStorage.setItem("phone",phone);
+localStorage.setItem("logged","yes");
+
+location.href="dashboard.html";
+}
+</script>
+</head>
+
+<body>
+
+<div class="center-box">
+<h2>SIGNUP</h2>
+
+<input id="phone" placeholder="Phone">
+<input id="ref" placeholder="Referral Code">
+
+<button class="main-btn" onclick="signupUser()">CREATE</button>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+<link rel="stylesheet" href="style.css">
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCA-CqdOOvUwcCx-LFfgsD44cQRCeI-G1U",
+  authDomain: "data-seller-c30db.firebaseapp.com",
+  projectId: "data-seller-c30db",
+  storageBucket: "data-seller-c30db.firebasestorage.app",
+  messagingSenderId: "33011133656",
+  appId: "1:33011133656:web:cc11efa04fb5ea21ec3bad"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* AUTH */
+const pass = prompt("Enter Admin Password");
+if(pass !== "admin@2026"){
+  alert("Denied");
+  window.location.href = "index.html";
+}
+
+/* USERS */
+async function loadUsers(){
+  const snap = await getDocs(collection(db,"users"));
+  const box = document.getElementById("users");
+  box.innerHTML = "";
+
+  snap.forEach(u=>{
+    const data = u.data();
+
+    const div = document.createElement("div");
+    div.className = "history-item";
+
+    div.innerHTML = `
+      📱 ${data.phone}<br>
+      🪙 Coins: ${data.coins || 0}<br>
+      👑 ${data.role || "normal"}<br><br>
+
+      <input id="c-${data.phone}" placeholder="Coins">
+      <button onclick="updateCoins('${data.phone}')">Update</button>
+      <button onclick="makePremium('${data.phone}')">Premium</button>
+    `;
+
+    box.appendChild(div);
+  });
+}
+
+/* UPDATE COINS */
+window.updateCoins = async (phone)=>{
+  const val = document.getElementById("c-"+phone).value;
+  await updateDoc(doc(db,"users",phone),{
+    coins:Number(val)
+  });
+  alert("Updated");
+  loadUsers();
+}
+
+/* PREMIUM */
+window.makePremium = async (phone)=>{
+  await updateDoc(doc(db,"users",phone),{
+    role:"premium"
+  });
+  alert("Premium Activated");
+  loadUsers();
+}
+
+/* ADS */
+window.addAd = async ()=>{
+  const img = document.getElementById("adImg").value;
+  const link = document.getElementById("adLink").value;
+
+  await addDoc(collection(db,"ads"),{
+    image:img,
+    link:link,
+    time:Date.now()
+  });
+
+  alert("Ad Added");
+}
+
+loadUsers();
+</script>
+
+</head>
+
+<body>
+
+<div class="center-box">
+  <div class="logo-circle">👑</div>
+  <h1>ADMIN PANEL</h1>
+
+  <h3>Users</h3>
+  <div id="users">Loading...</div>
+
+  <hr style="margin:20px 0">
+
+  <h3>📣 Ads</h3>
+  <input id="adImg" placeholder="Image URL">
+  <input id="adLink" placeholder="Link">
+  <button class="main-btn" onclick="addAd()">Add Ad</button>
+
+</div>
+
+</body>
+</html>
