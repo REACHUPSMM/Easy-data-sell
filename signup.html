@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Signup
+</title>
+
+<link rel="stylesheet"
+href="style.css">
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+
+getFirestore,
+doc,
+getDoc,
+setDoc,
+updateDoc
+
+}
+
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCA-CqdOOvUwcCx-LFfgsD44cQRCeI-G1U",
+
+authDomain: "data-seller-c30db.firebaseapp.com",
+
+projectId: "data-seller-c30db",
+
+storageBucket: "data-seller-c30db.firebasestorage.app",
+
+messagingSenderId: "33011133656",
+
+appId: "1:33011133656:web:cc11efa04fb5ea21ec3bad"
+
+};
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getFirestore(app);
+
+window.signupUser =
+async function(){
+
+const phone =
+document.getElementById(
+"phone"
+).value.trim();
+
+const referral =
+document.getElementById(
+"referral"
+).value.trim();
+
+if(phone === ""){
+
+alert(
+"Enter mobile number"
+);
+
+return;
+
+}
+
+try{
+
+const userRef =
+doc(db,"users",phone);
+
+const snap =
+await getDoc(userRef);
+
+if(snap.exists()){
+
+alert(
+"Account already exists"
+);
+
+return;
+
+}
+
+await setDoc(userRef,{
+
+phone:phone,
+
+coins:0,
+
+premium:false,
+
+referral:referral,
+
+created:
+new Date().toISOString()
+
+});
+
+if(referral !== ""){
+
+const refRef =
+doc(db,"users",referral);
+
+const refSnap =
+await getDoc(refRef);
+
+if(refSnap.exists()){
+
+const oldCoins =
+refSnap.data().coins || 0;
+
+await updateDoc(refRef,{
+
+coins:
+oldCoins + 10000
+
+});
+
+}
+
+}
+
+alert(
+"Account created successfully 🚀"
+);
+
+window.location.href =
+"login.html";
+
+}
+
+catch(error){
+
+alert(
+error.message
+);
+
+}
+
+}
+
+</script>
+
+</head>
+
+<body>
+
+<div class="top-bar">
+
+<div class="back-btn"
+onclick="history.back()">
+
+← Back
+
+</div>
+
+<a href="menu.html"
+class="menu-btn">
+
+☰ Menu
+
+</a>
+
+</div>
+
+<div class="center-box">
+
+<div class="logo-circle">
+🚀
+</div>
+
+<h1>
+Create Account
+</h1>
+
+<p>
+Start earning reward coins daily
+</p>
+
+<input
+type="text"
+id="phone"
+placeholder="Mobile Number">
+
+<input
+type="text"
+id="referral"
+placeholder="Referral Code Optional">
+
+<button
+class="main-btn"
+onclick="signupUser()">
+
+CREATE ACCOUNT
+
+</button>
+
+<a href="login.html"
+class="link-text">
+
+Already have account?
+
+</a>
+
+</div>
+
+</body>
+</html>
