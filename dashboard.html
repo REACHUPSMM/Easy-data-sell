@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import {
+getFirestore,
+doc,
+getDoc,
+updateDoc
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyCA-CqdOOvUwcCx-LFfgsD44cQRCeI-G1U",
+authDomain: "data-seller-c30db.firebaseapp.com",
+projectId: "data-seller-c30db",
+storageBucket: "data-seller-c30db.firebasestorage.app",
+messagingSenderId: "33011133656",
+appId: "1:33011133656:web:cc11efa04fb5ea21ec3bad"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const phone = localStorage.getItem("phone");
+
+if(!phone){
+window.location.href="login.html";
+}
+
+const userRef = doc(db,"users",phone);
+
+let coins = 0;
+let running = false;
+let timer;
+
+async function loadUser(){
+
+const snap = await getDoc(userRef);
+const data = snap.data();
+
+if(data.blocked){
+alert("Blocked by Admin");
+window.location.href="login.html";
+return;
+}
+
+coins = data.coins || 0;
+document.getElementById("coinText").innerText = coins.toFixed(1);
+}
+
+loadUser();
+
+// TIMER + EARN
+window.startTimer = function(){
+
+if(running) return;
+running = true;
+
+let time = 120;
+
+timer = setInterval(async ()=>{
+
+let m = Math.floor(time/60);
+let s = time%60;
+
+document.getElementById("timer").innerText = `${m}:${s<10?"0":""}${s}`;
+
+coins += 0.1;
+document.getElementById("coinText").innerText = coins.toFixed(1);
+
+await updateDoc(userRef,{coins});
+
+time--;
+
+if(time<0){
+clearInterval(timer);
+running=false;
+document.getElementById("timer").innerText="READY";
+}
+
+},1000);
+};
+
+</script>
+
+</head>
+
+<body>
+
+<h1>Dashboard</h1>
+
+🪙 Coins: <span id="coinText">0</span>
+
+<h2 id="timer">READY</h2>
+
+<button onclick="startTimer()">START</button>
+
+<br><br>
+
+<a href="withdraw.html">💸 Withdraw</a>
+
+</body>
+</html>
