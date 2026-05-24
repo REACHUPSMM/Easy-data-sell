@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Login
+</title>
+
+<link rel="stylesheet"
+href="style.css">
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+
+getFirestore,
+doc,
+getDoc,
+setDoc
+
+}
+
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCA-CqdOOvUwcCx-LFfgsD44cQRCeI-G1U",
+
+authDomain: "data-seller-c30db.firebaseapp.com",
+
+projectId: "data-seller-c30db",
+
+storageBucket: "data-seller-c30db.firebasestorage.app",
+
+messagingSenderId: "33011133656",
+
+appId: "1:33011133656:web:cc11efa04fb5ea21ec3bad"
+
+};
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getFirestore(app);
+
+window.loginUser =
+async function(){
+
+const phone =
+document.getElementById(
+"phone"
+).value.trim();
+
+const password =
+document.getElementById(
+"password"
+).value.trim();
+
+if(phone === ""){
+
+alert(
+"Enter mobile number"
+);
+
+return;
+
+}
+
+let premium = false;
+
+if(password === "2026dataearn"){
+
+premium = false;
+
+}
+
+else if(password === "2026datasellpremium"){
+
+premium = true;
+
+}
+
+else{
+
+alert(
+"Wrong password"
+);
+
+return;
+
+}
+
+const userRef =
+doc(db,"users",phone);
+
+const snap =
+await getDoc(userRef);
+
+if(!snap.exists()){
+
+await setDoc(userRef,{
+
+phone:phone,
+coins:0,
+premium:premium,
+created:
+new Date().toISOString()
+
+});
+
+}
+
+localStorage.setItem(
+"phone",
+phone
+);
+
+window.location.href =
+"dashboard.html";
+
+}
+
+</script>
+
+</head>
+
+<body>
+
+<div class="top-bar">
+
+<div class="back-btn"
+onclick="history.back()">
+
+← Back
+
+</div>
+
+<a href="menu.html"
+class="menu-btn">
+
+☰ Menu
+
+</a>
+
+</div>
+
+<div class="center-box">
+
+<div class="logo-circle">
+🔐
+</div>
+
+<h1>
+Login
+</h1>
+
+<p>
+Access your earning dashboard
+</p>
+
+<input
+type="text"
+id="phone"
+placeholder="Mobile Number">
+
+<input
+type="password"
+id="password"
+placeholder="Password">
+
+<button
+class="main-btn"
+onclick="loginUser()">
+
+LOGIN
+
+</button>
+
+<a href="signup.html"
+class="link-text">
+
+Create New Account
+
+</a>
+
+</div>
+
+</body>
+</html>
