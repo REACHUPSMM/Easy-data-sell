@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Dashboard
+</title>
+
+<link rel="stylesheet"
+href="style.css">
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+
+getFirestore,
+doc,
+getDoc,
+updateDoc
+
+}
+
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCA-CqdOOvUwcCx-LFfgsD44cQRCeI-G1U",
+
+authDomain: "data-seller-c30db.firebaseapp.com",
+
+projectId: "data-seller-c30db",
+
+storageBucket: "data-seller-c30db.firebasestorage.app",
+
+messagingSenderId: "33011133656",
+
+appId: "1:33011133656:web:cc11efa04fb5ea21ec3bad"
+
+};
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getFirestore(app);
+
+const phone =
+localStorage.getItem("phone");
+
+if(!phone){
+
+window.location.href =
+"login.html";
+
+}
+
+const userRef =
+doc(db,"users",phone);
+
+let coins = 0;
+
+let running = false;
+
+let timer;
+
+async function loadUser(){
+
+const snap =
+await getDoc(userRef);
+
+const data =
+snap.data();
+
+coins =
+data.coins || 0;
+
+document.getElementById(
+"coinText"
+).innerHTML =
+coins.toFixed(1);
+
+if(data.premium){
+
+document.getElementById(
+"premiumStatus"
+).innerHTML =
+"👑 Premium Active";
+
+}
+
+}
+
+loadUser();
+
+window.startSelling =
+function(){
+
+if(running){
+
+return;
+
+}
+
+running = true;
+
+document.getElementById(
+"statusText"
+).innerHTML =
+"🟢 Earning Started";
+
+timer =
+setInterval(async()=>{
+
+coins += 0.1;
+
+document.getElementById(
+"coinText"
+).innerHTML =
+coins.toFixed(1);
+
+await updateDoc(userRef,{
+coins:coins
+});
+
+},1000);
+
+}
+
+window.stopSelling =
+function(){
+
+clearInterval(timer);
+
+running = false;
+
+document.getElementById(
+"statusText"
+).innerHTML =
+"🔴 Earning Stopped";
+
+}
+
+window.copyReferral =
+function(){
+
+navigator.clipboard.writeText(
+phone
+);
+
+alert(
+"Referral copied 🚀"
+);
+
+}
+
+</script>
+
+</head>
+
+<body>
+
+<div class="top-bar">
+
+<div class="back-btn"
+onclick="history.back()">
+← Back
+</div>
+
+<a href="menu.html"
+class="menu-btn">
+☰ Menu
+</a>
+
+</div>
+
+<div class="dashboard-top">
+
+<div>
+
+<h1 class="welcome-title">
+Welcome 👋
+</h1>
+
+<p class="welcome-sub">
+Start earning now
+</p>
+
+</div>
+
+<div class="coin-card">
+
+🪙
+
+<span id="coinText">
+0
+</span>
+
+</div>
+
+</div>
+
+<div class="main-card">
+
+<div class="live-box">
+🔥 LIVE EARNING
+</div>
+
+<div id="premiumStatus"
+class="status-text">
+
+Normal User
+
+</div>
+
+<div id="timer">
+02:00
+</div>
+
+<div id="statusText"
+class="status-text">
+
+Ready To Start
+
+</div>
+
+<button
+class="main-btn"
+onclick="startSelling()">
+
+START SELLING
+
+</button>
+
+<br><br>
+
+<button
+class="stop-btn"
+onclick="stopSelling()">
+
+STOP SELLING
+
+</button>
+
+</div>
+
+<div class="referral-card">
+
+<h2>
+🎁 Referral Rewards
+</h2>
+
+<p>
+Invite friends and earn 10000 bonus coins
+</p>
+
+<div class="ref-code">
+
+<script>
+document.write(phone);
+</script>
+
+</div>
+
+<button
+class="copy-btn"
+onclick="copyReferral()">
+
+COPY REFERRAL CODE
+
+</button>
+
+</div>
+
+<div class="bottom-nav">
+
+<a href="withdraw.html">
+💸
+<span>
+Withdraw
+</span>
+</a>
+
+<a href="dashboard.html">
+🏠
+<span>
+Home
+</span>
+</a>
+
+<a href="premium.html">
+👑
+<span>
+Premium
+</span>
+</a>
+
+</div>
+
+</body>
+</html>
